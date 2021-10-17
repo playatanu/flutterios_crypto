@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutterios_crypto/providers/theme_notifier.dart';
+import 'package:flutterios_crypto/providers/themedata.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -8,11 +12,13 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  bool isDaekMode = false;
+  var _darkTheme = true;
   bool isAndroidView = false;
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Settings'),
@@ -27,12 +33,14 @@ class _SettingPageState extends State<SettingPage> {
                 children: [
                   const Text('Dark Mode'),
                   Switch(
-                    value: isDaekMode,
-                    onChanged: (value) {
+                    value: _darkTheme,
+                    onChanged: (val) {
                       setState(() {
-                        isDaekMode = value;
-                        print(isDaekMode);
+                        _darkTheme = val;
+
+                        print(_darkTheme);
                       });
+                      onThemeChanged(val, themeNotifier);
                     },
                     activeTrackColor: Colors.yellow,
                     activeColor: Colors.orangeAccent,
@@ -62,5 +70,13 @@ class _SettingPageState extends State<SettingPage> {
             ),
           ],
         ));
+  }
+
+  void onThemeChanged(bool value, ThemeNotifier themeNotifier) async {
+    (value)
+        ? themeNotifier.setTheme(darkTheme)
+        : themeNotifier.setTheme(lightTheme);
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setBool('darkMode', value);
   }
 }
