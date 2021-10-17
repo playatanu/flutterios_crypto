@@ -8,7 +8,7 @@ class ApiService {
   Future<List> getPost(_chosenValue) async {
     try {
       String url =
-          'https://rest.coinapi.io/v1/exchangerate/BTC/$_chosenValue?apikey=$api';
+          '//https://rest.coinapi.io/v1/exchangerate/BTC/$_chosenValue?apikey=$api';
       var response = await http.get(Uri.parse(url));
       print(response.body);
       return jsonDecode(response.body);
