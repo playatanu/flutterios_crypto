@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   ApiService postService = ApiService();
   @override
   void initState() {
-    postService.getPost(_chosenValue);
+    postService.getPost();
 
     super.initState();
   }
@@ -42,48 +42,36 @@ class _HomePageState extends State<HomePage> {
         alignment: AlignmentDirectional.bottomCenter,
         children: [
           FutureBuilder(
-              future: postService.getPost(_chosenValue),
+              future: postService.getPost(),
               builder: (context, AsyncSnapshot<List> snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
                         String name =
-                            (snapshot.data?[index]['asset']).toString();
-                        String price =
-                            (snapshot.data?[index]['rate']).toString();
+                            (snapshot.data?[index]['name']).toString();
+                        String price = double.parse(((snapshot.data?[index]
+                                    ['price_usd'])
+                                .toStringAsFixed(2)))
+                            .toString();
+                        String priceChange = (snapshot.data?[index]
+                                ['volume_1hrs_usd'])
+                            .toString();
+
+                        String iscrypto = priceChange = (snapshot.data?[index]
+                                ['type_is_crypto'])
+                            .toString();
 
                         // ignore: prefer_const_constructors
                         return CustomListTile(
                           name: name,
                           price: price,
-                          image:
-                              'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/BTC_Logo.svg/1200px-BTC_Logo.svg.png',
+                          priceChange: priceChange,
+                          iscrypto: iscrypto,
                         );
                       });
                 } else if (snapshot.hasError) {
-                  return ListView(
-                    children: [
-                      CustomListTile(
-                        name: 'Bitcoins',
-                        price: "112",
-                        image:
-                            'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/BTC_Logo.svg/1200px-BTC_Logo.svg.png',
-                      ),
-                      CustomListTile(
-                        name: 'Erhereum',
-                        price: "112",
-                        image:
-                            'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png',
-                      ),
-                      CustomListTile(
-                        name: 'Litecoin',
-                        price: "112",
-                        image:
-                            'https://upload.wikimedia.org/wikipedia/commons/e/e3/Litecoin_Logo.jpg',
-                      )
-                    ],
-                  );
+                  return Text('error');
                 } else {
                   return Center(
                     child: CircularProgressIndicator(),
